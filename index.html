@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="Utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Image Editor</title>
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" />
+        <style>
+            /* Add your styles here */
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+*{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins',sans-serif;
+}
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background:midnightblue;
+}
+button:hover{
+    box-shadow:0 0 20px darkcyan;
+}
+.container{
+    width: 850px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px 35px 35px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.container.disable :where(.editor-panel, .reset-filter ,.save-img){
+    opacity: 0.6;
+    pointer-events:none;
+}
+.container h2{
+    font-size: 22px;
+    font-weight: 500;
+}
+.container .wrapper{
+    display: flex;
+    margin:20px 0;
+    min-height: 335px;
+}
+
+.wrapper .editor-panel{
+    width: 280px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    border:1px solid #ccc;
+}
+.editor-panel .title{
+    display: block;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.editor-panel .options, .controls{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+}
+
+.editor-panel button{
+    height: 40px;
+    font-size: 20px;
+    color: #6C757D;
+    margin-bottom: 8px;
+    border-radius: 3px;
+    background: #fff;
+    border:1px solid #aaa;
+}
+.editor-panel button:hover{
+    background: #f5f5f5;
+}
+
+.editor-panel .filter button {
+    width:calc(100% / 2 - 4px);
+}
+
+.filter button.active{
+    color:#fff;
+    background: midnightblue;
+    border-color: #5372f0;
+}
+
+.filter .slider{
+    margin-top: 12px;
+}
+
+.filter .slider .filter-info .name:hover{
+    text-shadow: 0 0 40px grey;
+    cursor: pointer;
+}
+
+.filter .slider .filter-info{
+    display: flex;
+    color: #464646;
+    font-size:14px;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.filter .slider input{
+    width: 100%;
+    height: 5px;
+    accent-color:#5372f0;
+}
+
+.editor-panel .rotate{
+    margin-top:17px;
+}
+
+.editor-panel .rotate button{
+    width:calc(100% /4 - 3px);
+}
+
+.rotate button:nth-child(3),
+.rotate button:nth-child(4){
+    font-size:18px;
+}
+
+.wrapper .preview-img{
+    flex-grow: 1;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+}
+
+.preview-img img{
+    max-width: 490px;
+    max-height: 355px;
+    width: 100%;
+    height:100%;
+    object-fit: contain;
+}
+
+.controls button{
+    font-size:14px;
+    cursor:pointer;
+    color: #fff;
+    background: #fff;
+    padding: 11px 20px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.controls .reset-filter{
+    background:#204e77;
+    color: white;
+    border: 1px solid #6C757D;
+}
+
+.controls .choose-img{
+    background: #0b87f4;
+    border: 1px solid #6C757D;
+}
+
+.controls .save-img{
+    margin-left: 5px;
+    background: midnightblue;
+    border: 1px solid #5372f0;
+}
+
+@media screen and (max-width:760px){
+    .container {
+        padding: 25px;
+    }
+    .container .wrapper{
+        flex-wrap: wrap-reverse;
+    }
+    .wrapper .editor-panel{
+        width:100%;
+    }
+    .wrapper .preview-img{
+        width: 100%;
+        margin: 0 0 15px;
+    }
+}
+
+@media screen and (max-width:500px) {
+    .controls button{
+        width:100%;
+        margin-bottom: 10px;
+    }
+    .controls .row{
+        width: 100%;
+    }
+    .controls .row .save-img{
+        margin-left: 0px;
+    }
+}
+        </style>
+    </head>
+    <body>
+        <div class="container disable">
+            <h2>Easy Image Editor</h2>
+            <div class="wrapper">
+                <div class="editor-panel">
+                    <div class="filter">
+                        <label class="title">Filters</label>
+                        <div class="options">
+                            <button id="brightness" class="active">Brightness</button>
+                            <button id="saturation">Saturation</button>
+                            <button id="inversion">Inversion</button>
+                            <button id="grayscale">Grayscale</button>
+                            <button id="contrast">Contrast</button>
+                            <button id="blur">Blur</button>
+                            <button id="sepia">Sepia</button>
+                        </div>
+                        <div class="slider">
+                            <div class="filter-info">
+                                <p class="name">Brightness</p>
+                                <p class="value">100%</p>
+                            </div>
+                            <input type="range" value="100" min="0" max="200">
+                        </div>
+                    </div>
+                    <div class="rotate">
+                        <label class="title">Rotate & Flip</label>
+                        <div class="options">
+                            <button id="left"><i class="fa-solid fa-rotate-left"></i></button>
+                            <button id="right"><i class="fa-solid fa-rotate-right"></i></button>
+                            <button id="horizontal"><i class="bx bx-reflect-vertical"></i></button>
+                            <button id="vertical"><i class="bx bx-reflect-horizontal"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-img">
+                    <img src="images/image-placeholder.svg" alt="preview-img">
+                </div>
+            </div>
+            <div class="controls">
+                <button class="reset-filter">Reset Filter</button>
+                <div class="row">
+                    <input type="file" class="file-input" accept="*" hidden>
+                    <button class="choose-img">Choose Image</button>
+                    <button class="save-img">Save Image</button>
+                </div>
+            </div>
+        </div>
+        <script >
+            const fileInput = document.querySelector(".file-input"),
+                  filterOptions = document.querySelectorAll(".filter button"),
+                  filterName = document.querySelector(".filter-info .name"),
+                  filterValue = document.querySelector(".filter-info .value"),
+                  filterSlider = document.querySelector(".slider input"),
+                  rotateOptions = document.querySelectorAll(".rotate button"),
+                  previewImg = document.querySelector(".preview-img img"),
+                  resetFilterBtn = document.querySelector(".reset-filter"),
+                  chooseImgBtn = document.querySelector(".choose-img"),
+                  saveImgBtn = document.querySelector(".save-img");
+
+let brightness = 100, saturation = 100, inversion = 0, grayscale = 0, contrast = 100, blur = 0, sepia = 0;
+let rotate = 0, flipHorizontal = 1, flipVertical = 1, zoom = 1;
+
+const applyFilters = () => {
+    previewImg.style.transform = `rotate(${rotate}deg) scale(${flipHorizontal}, ${flipVertical}) scale(${zoom})`;
+    previewImg.style.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%) contrast(${contrast}%) blur(${blur}px) sepia(${sepia}%)`;
+}
+
+const loadImage = () => {
+    let file = fileInput.files[0];
+    if (!file) return;
+    previewImg.src = URL.createObjectURL(file);
+    previewImg.addEventListener("load", () => {
+        resetFilterBtn.click();
+        document.querySelector(".container").classList.remove("disable");
+    });
+}
+
+filterOptions.forEach(option => {
+    option.addEventListener("click", () => {
+        document.querySelector(".filter .active").classList.remove("active");
+        option.classList.add("active");
+        filterName.innerText = option.innerText;
+
+        if (option.id === "brightness") {
+            filterSlider.max = "200";
+            filterSlider.value = brightness;
+            filterValue.innerText = `${brightness}%`;
+        } else if (option.id === "saturation") {
+            filterSlider.max = "200";
+            filterSlider.value = saturation;
+            filterValue.innerText = `${saturation}%`;
+        } else if (option.id === "inversion") {
+            filterSlider.max = "100";
+            filterSlider.value = inversion;
+            filterValue.innerText = `${inversion}%`;
+        } else if (option.id === "grayscale") {
+            filterSlider.max = "100";
+            filterSlider.value = grayscale;
+            filterValue.innerText = `${grayscale}%`;
+        } else if (option.id === "contrast") {
+            filterSlider.max = "200";
+            filterSlider.value = contrast;
+            filterValue.innerText = `${contrast}%`;
+        } else if (option.id === "blur") {
+            filterSlider.max = "10";
+            filterSlider.value = blur;
+            filterValue.innerText = `${blur}px`;
+        } else if (option.id === "sepia") {
+            filterSlider.max = "100";
+            filterSlider.value = sepia;
+            filterValue.innerText = `${sepia}%`;
+        }
+    });
+});
+
+const updateFilter = () => {
+    filterValue.innerText = `${filterSlider.value}%`;
+    const selectedFilter = document.querySelector(".filter .active");
+
+    if (selectedFilter.id === "brightness") {
+        brightness = filterSlider.value;
+    } else if (selectedFilter.id === "saturation") {
+        saturation = filterSlider.value;
+    } else if (selectedFilter.id === "inversion") {
+        inversion = filterSlider.value;
+    } else if (selectedFilter.id === "grayscale") {
+        grayscale = filterSlider.value;
+    } else if (selectedFilter.id === "contrast") {
+        contrast = filterSlider.value;
+    } else if (selectedFilter.id === "blur") {
+        blur = filterSlider.value;
+    } else if (selectedFilter.id === "sepia") {
+        sepia = filterSlider.value;
+    }
+    applyFilters();
+}
+
+rotateOptions.forEach(option => {
+    option.addEventListener("click", () => {
+        if (option.id === "left") {
+            rotate -= 90;
+        } else if (option.id === "right") {
+            rotate += 90;
+        } else if (option.id === "horizontal") {
+            flipHorizontal = flipHorizontal === 1 ? -1 : 1;
+        } else {
+            flipVertical = flipVertical === 1 ? -1 : 1;
+        }
+        applyFilters();
+    });
+});
+
+const resetFilter = () => {
+    brightness = 100;
+    saturation = 100;
+    inversion = 0;
+    grayscale = 0;
+    contrast = 100;
+    blur = 0;
+    sepia = 0;
+    rotate = 0;
+    flipHorizontal = 1;
+    flipVertical = 1;
+    zoom = 1;
+    filterOptions[0].click();
+    applyFilters();
+}
+
+const saveImage = () => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = previewImg.naturalWidth;
+    canvas.height = previewImg.naturalHeight;
+    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%) contrast(${contrast}%) blur(${blur}px) sepia(${sepia}%)`;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    if (rotate !== 0) {
+        ctx.rotate(rotate * Math.PI / 180);
+    }
+    ctx.scale(flipHorizontal, flipVertical);
+    ctx.drawImage(previewImg, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+    const link = document.createElement("a");
+    link.download = "image.jpg";
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+fileInput.addEventListener("change", loadImage);
+filterSlider.addEventListener("input", updateFilter);
+resetFilterBtn.addEventListener("click", resetFilter);
+saveImgBtn.addEventListener("click", saveImage);
+chooseImgBtn.addEventListener("click", () => fileInput.click());
+        </script>
+    </body>
+</html>
